@@ -643,6 +643,7 @@
             <button class="btn btn-primary" onclick="saveData()">入力内容を保存</button>
             <button class="btn btn-info" onclick="loadData()">保存データを読み込み</button>
             <button class="btn btn-success" onclick="downloadData()">テキストファイルをダウンロード</button>
+            <button class="btn btn-danger" onclick="deleteData()">データ削除</button>
             <div class="note" style="margin-top: 15px;">
                 ※「保存」でブラウザに一時保存、「ダウンロード」でテキストファイルとして出力できます<br>
                 ※ブラウザを閉じると保存データは消えますので、必要に応じてダウンロードしてください
@@ -965,6 +966,29 @@
                 saveData();
             }
         });
+
+        // データ削除
+        function deleteData() {
+            if (confirm('保存されているデータを削除してもよろしいですか？')) {
+                try {
+                    localStorage.removeItem('homepageData');
+                    console.log('データを削除しました');
+                    
+                    // 全ての入力フィールドをクリア
+                    const inputs = document.querySelectorAll('input, textarea, select');
+                    inputs.forEach(input => {
+                        if (input.id) {
+                            input.value = '';
+                        }
+                    });
+
+                    alert('データを削除しました。');
+                } catch (error) {
+                    console.error('データの削除に失敗しました:', error);
+                    alert('データの削除に失敗しました。');
+                }
+            }
+        }
     </script> 
 </body>
 
