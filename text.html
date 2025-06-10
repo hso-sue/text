@@ -11,8 +11,20 @@
             }
         });
 
+        // 保存するデータの内容を確認
+        console.log('保存するデータ:', data);
+
         // localStorageに保存
-        localStorage.setItem('homepageData', JSON.stringify(data));
+        try {
+            localStorage.setItem('homepageData', JSON.stringify(data));
+            console.log('データの保存に成功しました');
+            
+            // 保存されたデータを確認
+            const savedData = localStorage.getItem('homepageData');
+            console.log('保存されたデータ:', savedData);
+        } catch (error) {
+            console.error('データの保存に失敗しました:', error);
+        }
 
         // 成功メッセージ表示
         const successMsg = document.getElementById('success-message');
@@ -24,21 +36,33 @@
 
     // データ読み込み
     function loadData() {
-        const savedData = localStorage.getItem('homepageData');
-        if (savedData) {
-            const data = JSON.parse(savedData);
+        try {
+            const savedData = localStorage.getItem('homepageData');
+            console.log('読み込まれたデータ:', savedData);
 
-            // 全ての入力フィールドに値を設定
-            Object.keys(data).forEach(key => {
-                const element = document.getElementById(key);
-                if (element) {
-                    element.value = data[key];
-                }
-            });
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                console.log('パースされたデータ:', data);
 
-            alert('保存されたデータを読み込みました。');
-        } else {
-            alert('保存されたデータがありません。');
+                // 全ての入力フィールドに値を設定
+                Object.keys(data).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        element.value = data[key];
+                        console.log(`フィールド ${key} に値を設定:`, data[key]);
+                    } else {
+                        console.log(`フィールド ${key} が見つかりません`);
+                    }
+                });
+
+                alert('保存されたデータを読み込みました。');
+            } else {
+                console.log('保存されたデータがありません');
+                alert('保存されたデータがありません。');
+            }
+        } catch (error) {
+            console.error('データの読み込みに失敗しました:', error);
+            alert('データの読み込みに失敗しました。');
         }
     }
 
@@ -254,15 +278,39 @@ A3: ${data.service5_a3 || ''}
 
     // ページ読み込み時に保存データを自動的に読み込む
     document.addEventListener('DOMContentLoaded', function() {
-        const savedData = localStorage.getItem('homepageData');
-        if (savedData) {
-            const data = JSON.parse(savedData);
-            Object.keys(data).forEach(key => {
-                const element = document.getElementById(key);
-                if (element) {
-                    element.value = data[key];
-                }
-            });
+        try {
+            console.log('ページ読み込み時のデータ読み込みを開始');
+            const savedData = localStorage.getItem('homepageData');
+            console.log('保存されたデータ:', savedData);
+
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                console.log('パースされたデータ:', data);
+
+                // 全ての入力フィールドに値を設定
+                Object.keys(data).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        element.value = data[key];
+                        console.log(`フィールド ${key} に値を設定:`, data[key]);
+                    } else {
+                        console.log(`フィールド ${key} が見つかりません`);
+                    }
+                });
+                console.log('データの読み込みが完了しました');
+            } else {
+                console.log('保存されたデータがありません');
+            }
+        } catch (error) {
+            console.error('データの読み込み中にエラーが発生しました:', error);
+        }
+    });
+
+    // データが変更されたときに自動保存
+    document.addEventListener('input', function(e) {
+        if (e.target.id) {
+            console.log(`フィールド ${e.target.id} が変更されました`);
+            saveData();
         }
     });
 </script> 
