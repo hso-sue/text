@@ -654,7 +654,7 @@
         // データ保存
         function saveData() {
             const data = {};
-
+    
             // 全ての入力フィールドを取得
             const inputs = document.querySelectorAll('input, textarea, select');
             inputs.forEach(input => {
@@ -662,11 +662,22 @@
                     data[input.id] = input.value;
                 }
             });
-
-            // ブラウザのメモリに保存
-            const jsonData = JSON.stringify(data);
-            window.savedData = jsonData;
-
+    
+            // 保存するデータの内容を確認
+            console.log('保存するデータ:', data);
+    
+            // localStorageに保存
+            try {
+                localStorage.setItem('homepageData', JSON.stringify(data));
+                console.log('データの保存に成功しました');
+                
+                // 保存されたデータを確認
+                const savedData = localStorage.getItem('homepageData');
+                console.log('保存されたデータ:', savedData);
+            } catch (error) {
+                console.error('データの保存に失敗しました:', error);
+            }
+    
             // 成功メッセージ表示
             const successMsg = document.getElementById('success-message');
             successMsg.style.display = 'block';
@@ -674,231 +685,237 @@
                 successMsg.style.display = 'none';
             }, 3000);
         }
-
+    
         // データ読み込み
         function loadData() {
-            if (window.savedData) {
-                const data = JSON.parse(window.savedData);
-
-                // 全ての入力フィールドに値を設定
-                Object.keys(data).forEach(key => {
-                    const element = document.getElementById(key);
-                    if (element) {
-                        element.value = data[key];
-                    }
-                });
-
-                alert('保存されたデータを読み込みました。');
-            } else {
-                alert('保存されたデータがありません。');
+            try {
+                const savedData = localStorage.getItem('homepageData');
+                console.log('読み込まれたデータ:', savedData);
+    
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    console.log('パースされたデータ:', data);
+    
+                    // 全ての入力フィールドに値を設定
+                    Object.keys(data).forEach(key => {
+                        const element = document.getElementById(key);
+                        if (element) {
+                            element.value = data[key];
+                            console.log(`フィールド ${key} に値を設定:`, data[key]);
+                        } else {
+                            console.log(`フィールド ${key} が見つかりません`);
+                        }
+                    });
+    
+                    alert('保存されたデータを読み込みました。');
+                } else {
+                    console.log('保存されたデータがありません');
+                    alert('保存されたデータがありません。');
+                }
+            } catch (error) {
+                console.error('データの読み込みに失敗しました:', error);
+                alert('データの読み込みに失敗しました。');
             }
         }
-
+    
         // テキストファイルダウンロード
         function downloadData() {
-            const data = {};
-
-            // 全ての入力フィールドを取得
-            const inputs = document.querySelectorAll('input, textarea, select');
-            inputs.forEach(input => {
-                if (input.id && input.value.trim() !== '') {
-                    data[input.id] = input.value;
-                }
-            });
-
+            const savedData = localStorage.getItem('homepageData');
+            const data = savedData ? JSON.parse(savedData) : {};
+    
             // テキスト形式に整形
             let textContent = `ホームページ制作用テキストデータ
-入力日時: ${new Date().toLocaleString('ja-JP')}
-
-===========================================
-【1. ファーストビュー（FV）】
-===========================================
-
-■メインコピー
-${data.main_copy || ''}
-
-■サブコピー
-${data.sub_copy || ''}
-
-===========================================
-【2. ABOUT（想い・わたしたちについて）】
-===========================================
-
-■事務所の想い
-${data.office_vision || ''}
-
-===========================================
-【3. SERVICE（サービス内容）】
-===========================================
-
-■サービス一覧
-${data.service_list || ''}
-
-■サービス詳細説明
-${data.service_details || ''}
-
-===========================================
-【4. REASON（選ばれる理由・強み）】
-===========================================
-
-■選ばれる理由
-${data.reasons || ''}
-
-===========================================
-【5. CASE（導入事例）】
-===========================================
-
-■実際の支援事例・クライアント事例
-${data.case_studies || ''}
-
-===========================================
-【6. COMPANY（事務所について）】
-===========================================
-
-■基本情報
-事務所名: ${data.office_name || ''}
-所在地: ${data.address || ''}
-電話番号: ${data.phone || ''}
-メールアドレス: ${data.email || ''}
-営業時間: ${data.business_hours || ''}
-定休日: ${data.holidays || ''}
-
-===========================================
-【事務所概要ページ】
-===========================================
-
-■代表メッセージ
-代表者名: ${data.representative_name || ''}
-本文:
-${data.message_content || ''}
-
-■理念
-本文:
-${data.philosophy_content || ''}
-
-===========================================
-【サービス内容ページ】
-===========================================
-
-■サービス1
-サービス名: ${data.service1_name || ''}
-説明文:
-${data.service1_intro || ''}
-
-具体的な支援内容:
-${data.service1_details || ''}
-
-強み・特色:
-${data.service1_strengths || ''}
-
-よくある質問:
-Q1: ${data.service1_q1 || ''}
-A1: ${data.service1_a1 || ''}
-
-Q2: ${data.service1_q2 || ''}
-A2: ${data.service1_a2 || ''}
-
-Q3: ${data.service1_q3 || ''}
-A3: ${data.service1_a3 || ''}
-
-■サービス2
-サービス名: ${data.service2_name || ''}
-説明文:
-${data.service2_intro || ''}
-
-具体的な支援内容:
-${data.service2_details || ''}
-
-強み・特色:
-${data.service2_strengths || ''}
-
-よくある質問:
-Q1: ${data.service2_q1 || ''}
-A1: ${data.service2_a1 || ''}
-
-Q2: ${data.service2_q2 || ''}
-A2: ${data.service2_a2 || ''}
-
-Q3: ${data.service2_q3 || ''}
-A3: ${data.service2_a3 || ''}
-
-■サービス3
-サービス名: ${data.service3_name || ''}
-説明文:
-${data.service3_intro || ''}
-
-具体的な支援内容:
-${data.service3_details || ''}
-
-強み・特色:
-${data.service3_strengths || ''}
-
-よくある質問:
-Q1: ${data.service3_q1 || ''}
-A1: ${data.service3_a1 || ''}
-
-Q2: ${data.service3_q2 || ''}
-A2: ${data.service3_a2 || ''}
-
-Q3: ${data.service3_q3 || ''}
-A3: ${data.service3_a3 || ''}
-
-■サービス4
-サービス名: ${data.service4_name || ''}
-説明文:
-${data.service4_intro || ''}
-
-具体的な支援内容:
-${data.service4_details || ''}
-
-強み・特色:
-${data.service4_strengths || ''}
-
-よくある質問:
-Q1: ${data.service4_q1 || ''}
-A1: ${data.service4_a1 || ''}
-
-Q2: ${data.service4_q2 || ''}
-A2: ${data.service4_a2 || ''}
-
-Q3: ${data.service4_q3 || ''}
-A3: ${data.service4_a3 || ''}
-
-■サービス5
-サービス名: ${data.service5_name || ''}
-説明文:
-${data.service5_intro || ''}
-
-具体的な支援内容:
-${data.service5_details || ''}
-
-強み・特色:
-${data.service5_strengths || ''}
-
-よくある質問:
-Q1: ${data.service5_q1 || ''}
-A1: ${data.service5_a1 || ''}
-
-Q2: ${data.service5_q2 || ''}
-A2: ${data.service5_a2 || ''}
-
-Q3: ${data.service5_q3 || ''}
-A3: ${data.service5_a3 || ''}
-
-===========================================
-【備考】
-===========================================
-※写真について
-- 代表者のポートレート写真
-- スタッフ写真（該当者分）
-- 事務所の外観・内観写真
-- サービス関連のイメージ写真
-上記写真を別途ご用意ください。
-
-※この内容をもとにホームページを制作いたします。
-追加・修正がございましたら、お気軽にお知らせください。
-`;
-
+    入力日時: ${new Date().toLocaleString('ja-JP')}
+    
+    ===========================================
+    【1. ファーストビュー（FV）】
+    ===========================================
+    
+    ■メインコピー
+    ${data.main_copy || ''}
+    
+    ■サブコピー
+    ${data.sub_copy || ''}
+    
+    ===========================================
+    【2. ABOUT（想い・わたしたちについて）】
+    ===========================================
+    
+    ■事務所の想い
+    ${data.office_vision || ''}
+    
+    ===========================================
+    【3. SERVICE（サービス内容）】
+    ===========================================
+    
+    ■サービス一覧
+    ${data.service_list || ''}
+    
+    ■サービス詳細説明
+    ${data.service_details || ''}
+    
+    ===========================================
+    【4. REASON（選ばれる理由・強み）】
+    ===========================================
+    
+    ■選ばれる理由
+    ${data.reasons || ''}
+    
+    ===========================================
+    【5. CASE（導入事例）】
+    ===========================================
+    
+    ■実際の支援事例・クライアント事例
+    ${data.case_studies || ''}
+    
+    ===========================================
+    【6. COMPANY（事務所について）】
+    ===========================================
+    
+    ■基本情報
+    事務所名: ${data.office_name || ''}
+    所在地: ${data.address || ''}
+    電話番号: ${data.phone || ''}
+    メールアドレス: ${data.email || ''}
+    営業時間: ${data.business_hours || ''}
+    定休日: ${data.holidays || ''}
+    
+    ===========================================
+    【事務所概要ページ】
+    ===========================================
+    
+    ■代表メッセージ
+    代表者名: ${data.representative_name || ''}
+    本文:
+    ${data.message_content || ''}
+    
+    ■理念
+    本文:
+    ${data.philosophy_content || ''}
+    
+    ===========================================
+    【サービス内容ページ】
+    ===========================================
+    
+    ■サービス1
+    サービス名: ${data.service1_name || ''}
+    説明文:
+    ${data.service1_intro || ''}
+    
+    具体的な支援内容:
+    ${data.service1_details || ''}
+    
+    強み・特色:
+    ${data.service1_strengths || ''}
+    
+    よくある質問:
+    Q1: ${data.service1_q1 || ''}
+    A1: ${data.service1_a1 || ''}
+    
+    Q2: ${data.service1_q2 || ''}
+    A2: ${data.service1_a2 || ''}
+    
+    Q3: ${data.service1_q3 || ''}
+    A3: ${data.service1_a3 || ''}
+    
+    ■サービス2
+    サービス名: ${data.service2_name || ''}
+    説明文:
+    ${data.service2_intro || ''}
+    
+    具体的な支援内容:
+    ${data.service2_details || ''}
+    
+    強み・特色:
+    ${data.service2_strengths || ''}
+    
+    よくある質問:
+    Q1: ${data.service2_q1 || ''}
+    A1: ${data.service2_a1 || ''}
+    
+    Q2: ${data.service2_q2 || ''}
+    A2: ${data.service2_a2 || ''}
+    
+    Q3: ${data.service2_q3 || ''}
+    A3: ${data.service2_a3 || ''}
+    
+    ■サービス3
+    サービス名: ${data.service3_name || ''}
+    説明文:
+    ${data.service3_intro || ''}
+    
+    具体的な支援内容:
+    ${data.service3_details || ''}
+    
+    強み・特色:
+    ${data.service3_strengths || ''}
+    
+    よくある質問:
+    Q1: ${data.service3_q1 || ''}
+    A1: ${data.service3_a1 || ''}
+    
+    Q2: ${data.service3_q2 || ''}
+    A2: ${data.service3_a2 || ''}
+    
+    Q3: ${data.service3_q3 || ''}
+    A3: ${data.service3_a3 || ''}
+    
+    ■サービス4
+    サービス名: ${data.service4_name || ''}
+    説明文:
+    ${data.service4_intro || ''}
+    
+    具体的な支援内容:
+    ${data.service4_details || ''}
+    
+    強み・特色:
+    ${data.service4_strengths || ''}
+    
+    よくある質問:
+    Q1: ${data.service4_q1 || ''}
+    A1: ${data.service4_a1 || ''}
+    
+    Q2: ${data.service4_q2 || ''}
+    A2: ${data.service4_a2 || ''}
+    
+    Q3: ${data.service4_q3 || ''}
+    A3: ${data.service4_a3 || ''}
+    
+    ■サービス5
+    サービス名: ${data.service5_name || ''}
+    説明文:
+    ${data.service5_intro || ''}
+    
+    具体的な支援内容:
+    ${data.service5_details || ''}
+    
+    強み・特色:
+    ${data.service5_strengths || ''}
+    
+    よくある質問:
+    Q1: ${data.service5_q1 || ''}
+    A1: ${data.service5_a1 || ''}
+    
+    Q2: ${data.service5_q2 || ''}
+    A2: ${data.service5_a2 || ''}
+    
+    Q3: ${data.service5_q3 || ''}
+    A3: ${data.service5_a3 || ''}
+    
+    ===========================================
+    【備考】
+    ===========================================
+    ※写真について
+    - 代表者のポートレート写真
+    - スタッフ写真（該当者分）
+    - 事務所の外観・内観写真
+    - サービス関連のイメージ写真
+    上記写真を別途ご用意ください。
+    
+    ※この内容をもとにホームページを制作いたします。
+    追加・修正がございましたら、お気軽にお知らせください。
+    `;
+    
             // ファイルダウンロード
             const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
             const url = URL.createObjectURL(blob);
@@ -910,15 +927,45 @@ A3: ${data.service5_a3 || ''}
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         }
-
-        // 初期化
-        document.addEventListener('DOMContentLoaded', function () {
-            // 保存されたデータがあれば読み込む
-            if (window.savedData) {
-                loadData();
+    
+        // ページ読み込み時に保存データを自動的に読み込む
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                console.log('ページ読み込み時のデータ読み込みを開始');
+                const savedData = localStorage.getItem('homepageData');
+                console.log('保存されたデータ:', savedData);
+    
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    console.log('パースされたデータ:', data);
+    
+                    // 全ての入力フィールドに値を設定
+                    Object.keys(data).forEach(key => {
+                        const element = document.getElementById(key);
+                        if (element) {
+                            element.value = data[key];
+                            console.log(`フィールド ${key} に値を設定:`, data[key]);
+                        } else {
+                            console.log(`フィールド ${key} が見つかりません`);
+                        }
+                    });
+                    console.log('データの読み込みが完了しました');
+                } else {
+                    console.log('保存されたデータがありません');
+                }
+            } catch (error) {
+                console.error('データの読み込み中にエラーが発生しました:', error);
             }
         });
-    </script>
+    
+        // データが変更されたときに自動保存
+        document.addEventListener('input', function(e) {
+            if (e.target.id) {
+                console.log(`フィールド ${e.target.id} が変更されました`);
+                saveData();
+            }
+        });
+    </script> 
 </body>
 
 </html>
